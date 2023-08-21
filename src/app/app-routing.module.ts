@@ -6,6 +6,7 @@ import {UserEditComponent} from "./page/user-edit/user-edit.component";
 import {UsersComponent} from "./page/users/users.component";
 import {ForbiddenComponent} from "./page/forbidden/forbidden.component";
 import {authGuard} from "./guard/auth.guard";
+import {RoleGuardService} from "./service/role-guard.service";
 // import {AuthGuardService} from "./service/auth-guard.service";
 
 
@@ -22,12 +23,18 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, RoleGuardService],
+    data: {
+      expectedRole: 2,
+    }
   },
   {
     path: 'user/edit/:id',
     component: UserEditComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, RoleGuardService],
+    data: {
+      expectedRole: 3,
+    }
   },
   {
     path: 'forbidden',
