@@ -25,8 +25,16 @@ export class NavComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.userSubscription = this.auth.currentUserSubject.subscribe(user => this.user = user);
-    console.log(this.user);
+    this.userSubscription = this.auth.currentUserSubject.subscribe(
+      user => this.user = user
+    );
+
+    if (this.user === null) {
+      this.user = JSON.parse(localStorage.getItem(this.auth.storageName) || '{}');
+      if (this.isUserObjectEmpty(this.user)) {
+        this.user = null;
+      }
+    }
 
   }
 
@@ -38,5 +46,18 @@ export class NavComponent implements OnInit, OnDestroy {
     this.auth.logout();
   }
 
+  isUserObjectEmpty(obj: User|null) {
+    if (obj === null) {
+      return false
+    }
+
+    for (const prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
 }
