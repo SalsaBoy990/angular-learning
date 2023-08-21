@@ -26,25 +26,50 @@ export class AuthService {
   ) {
   }
 
+
+  /**
+   * Get the user object from local storage (if it exists),
+   * Notify subscribed components with the new user value
+   */
+  setUserFromLocalStorage() {
+    if (!this.currentUserSubject.value) {
+      const user = JSON.parse(localStorage.getItem(this.storageName) || '{}');
+      if (!this.isUserObjectEmpty(user)) {
+        this.currentUserSubject.next(user);
+      }
+    }
+  }
+
+
+  /**
+   * Getter for the user object
+   */
   get currentUserValue(): User | null {
+    this.setUserFromLocalStorage();
     return this.currentUserSubject.value;
   }
 
-  login(loginData: User): Observable<{ accessToken: string }  | null | {[index: string]:any}> {
+
+  /**
+   * Login user and set the value of the user subject and emit this value for the subscribers
+   *
+   * @param loginData
+   */
+  login(loginData: User): Observable<{ accessToken: string } | null | { [index: string]: any }> {
     return this.http.post<{ accessToken: string }>(
       this.loginUrl,
       {email: loginData.email, password: loginData.password}
     )
 
-      .pipe( switchMap( response => {
-        if(response.accessToken) {
+      .pipe(switchMap(response => {
+        if (response.accessToken) {
           this.lastToken = response.accessToken;
           return this.userService.query(`email=${loginData.email}`)
         }
         return of(null);
-      }) )
+      }))
       .pipe(
-        tap( user => {
+        tap(user => {
           if (!user) {
             localStorage.removeItem(this.storageName);
             this.currentUserSubject.next(null);
@@ -60,9 +85,26 @@ export class AuthService {
       ;
   }
 
+
   logout() {
     localStorage.removeItem(this.storageName);
     this.currentUserSubject.next(null);
     this.router.navigate(['login']).then(r => console.log(r));
   }
+
+
+  isUserObjectEmpty(obj: User | null) {
+    if (obj === null) {
+      return false
+    }
+
+    for (const prop in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }
