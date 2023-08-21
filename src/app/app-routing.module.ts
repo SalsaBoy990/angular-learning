@@ -6,8 +6,8 @@ import {UserEditComponent} from "./page/user-edit/user-edit.component";
 import {UsersComponent} from "./page/users/users.component";
 import {ForbiddenComponent} from "./page/forbidden/forbidden.component";
 import {authGuard} from "./guard/auth.guard";
-import {RoleGuardService} from "./service/role-guard.service";
-// import {AuthGuardService} from "./service/auth-guard.service";
+import {roleGuard} from "./guard/role.guard";
+import {loggedinGuard} from "./guard/loggedin.guard";
 
 
 const routes: Routes = [
@@ -19,11 +19,12 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate: [loggedinGuard],
   },
   {
     path: 'users',
     component: UsersComponent,
-    canActivate: [authGuard, RoleGuardService],
+    canActivate: [authGuard, roleGuard],
     data: {
       expectedRole: 2,
     }
@@ -31,7 +32,7 @@ const routes: Routes = [
   {
     path: 'user/edit/:id',
     component: UserEditComponent,
-    canActivate: [authGuard, RoleGuardService],
+    canActivate: [authGuard, roleGuard],
     data: {
       expectedRole: 3,
     }
