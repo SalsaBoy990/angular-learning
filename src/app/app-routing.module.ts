@@ -5,13 +5,15 @@ import {LoginComponent} from "./page/login/login.component";
 import {UserEditComponent} from "./page/user-edit/user-edit.component";
 import {UsersComponent} from "./page/users/users.component";
 import {ForbiddenComponent} from "./page/forbidden/forbidden.component";
-import {AuthGuardService} from "./service/auth-guard.service";
+import {authGuard} from "./guard/auth.guard";
+// import {AuthGuardService} from "./service/auth-guard.service";
+
 
 const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [authGuard]
   },
   {
     path: 'login',
@@ -20,12 +22,12 @@ const routes: Routes = [
   {
     path: 'users',
     component: UsersComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [authGuard]
   },
   {
     path: 'user/edit/:id',
     component: UserEditComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [authGuard]
   },
   {
     path: 'forbidden',
